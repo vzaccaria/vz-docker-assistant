@@ -1,0 +1,19 @@
+{
+    "remote_directory": "ueiu",
+    "remote_directory_container_view": "/xuyz",
+    "image": "8373",
+    "url" : "addd@kxlkdls",
+    "port": "2891",
+    "reads": [
+        "xyz",
+        "zjjs"
+    ],
+    "writes": [
+        "abc"
+    ],
+    "env": {
+        "DOCKER_HOST": "tcp://localhost:2376",
+        "DOCKER_REMOTE_CERT_PATH": "/Users/zaccaria/dotfiles/zprezto/.zprezto-zack/Darwin/qnap-certs"
+    },
+    "run_command": "pippo $1 > @1"
+}
