@@ -9,12 +9,13 @@ progUsage = [docopt|
 vz-docker-assistant
 
 Usage:
-    vz-docker-assistant CONFIG
+    vz-docker-assistant CONFIG [ -i ]
     vz-docker-assistant --help | -h
     vz-docker-assistant --version
 
 Options:
     -h, --help             Show help
+    -i, --interactive      Dont invoke docker as a daemon
     --version              Show version.
 
 Arguments

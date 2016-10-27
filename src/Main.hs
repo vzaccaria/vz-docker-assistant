@@ -26,16 +26,16 @@ dispatchOptions usage = do {
   opts <- parseArgsOrExit usage =<< getArgs;
   file <- getArgOrExitWith usage opts (argument "CONFIG");
   let
-      -- hasLOpt       name = (isPresent opts (longOption name))
+      hasLOpt       name = (isPresent opts (longOption name))
       -- getLOptVal    name = let (Just s) = getArg opts (longOption name) in s
 
-      -- justLatex = isPresent opts (longOption "latex")
+      justInteractive = hasLOpt "interactive"
 
       -- fname = filename $ fromString file
       -- oname = encodeString $ replaceExtension fname (T.pack "pdf") 
 
   in do {
-    printCommandLog file;
+    printCommandLog file justInteractive;
   };
   return ();
 }

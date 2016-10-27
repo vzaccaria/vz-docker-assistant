@@ -3,26 +3,27 @@
 
 module PrintCommands where
 
-import Prelude (concatMap,Maybe(..),(<$>),putStrLn, ($), (++))
+import Prelude (concatMap,Maybe(..),(<$>),putStrLn, ($), (++), (==), Bool(..), (||), any, all, elem, not, error)
+import Data.Monoid (Any, All)
 import ReadConfig (readConfig, parseCommand, Config(..))
 import qualified ReadConfig as C
 import Data.String.Interpolate
 
-remoteCopyTo url (Just port) rd f = [i|scp ./#{f} #{url}:#{rd} -p #{port}
+remoteCopyTo url (Just port) rd f = [i|scp -P #{port} ./#{f} #{url}:#{rd}
 |]
-remoteCopyTo url Nothing rd f = [i|scp ./#{f} #{url}:#{rd}
-|]
-
-remoteCopyFrom url (Just port) rd f = [i|scp #{url}:#{rd} -p #{port} ./#{f}
-|]
-remoteCopyFrom url Nothing rd f = [i| scp #{url}:#{rd} ./#{f}
+remoteCopyTo url Nothing rd f =     [i|scp ./#{f} #{url}:#{rd}
 |]
 
-getCommandLog config =
+remoteCopyFrom url (Just port) rd f = [i|scp -P #{port} #{url}:#{rd}/#{f} ./#{f}
+|]
+remoteCopyFrom url Nothing rd f =     [i|scp #{url}:#{rd}/#{f} ./#{f}
+|]
+
+getCommandLog config isDaemon=
   let
       cd = case remoteDirectoryContainerView config of
             (Just d) -> d
-            _ -> "/"
+            _ -> "/data"
 
       rd = remoteDirectory config
 
@@ -31,15 +32,21 @@ getCommandLog config =
       copyTo = concatMap (remoteCopyTo u p rd) (reads config)
       copyFrom = concatMap (remoteCopyFrom u p rd) (writes config)
       cmd = parseCommand config
+      daemon = if isDaemon then "-d" else ""
 
-      command = [i|docker run -d -w #{cd} -v #{rd}:#{cd} #{image config} #{cmd}
+      command = [i|docker run #{daemon} -w #{cd} -v #{rd}:#{cd} #{image config} #{cmd}
 |]
   in
     copyTo ++ command ++ copyFrom
 
-printCommandLog fn = do {
+checkFile f = elem '/' f
+checkConfig c = not $ any (checkFile) (reads c) || any (checkFile) (writes c)
+
+printCommandLog fn isInteractive = do {
   c <- readConfig fn;
-  putStrLn $ getCommandLog c;
+  case checkConfig c of
+    False -> error "Sorry, files should only be local!"
+    _ -> putStrLn $ getCommandLog c (not isInteractive);
 }
 
 
