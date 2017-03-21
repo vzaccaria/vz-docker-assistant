@@ -1,11 +1,13 @@
 {-# LANGUAGE QuasiQuotes #-}
+
 module UsageCLI (progUsage) where
 
-import System.Environment (getArgs)
-import System.Console.Docopt
+import           System.Console.Docopt
+import           System.Environment    (getArgs)
 
 progUsage :: Docopt
-progUsage = [docopt|
+progUsage =
+    [docopt|
 vz-docker-assistant
 
 Usage:
@@ -19,5 +21,8 @@ Options:
     --version              Show version.
 
 Arguments
-    CONFIG                 JSON configuration.
+    CONFIG                JSON configuration.
+
+Commands
+    dumpconfig            Dump example configuration
 |]

@@ -8,6 +8,7 @@ import Data.Monoid (Any, All)
 import ReadConfig (readConfig, parseCommand, Config(..))
 import qualified ReadConfig as C
 import Data.String.Interpolate
+import qualified Data.Map as M
 
 remoteCopyTo url (Just port) rd f = [i|scp -P #{port} ./#{f} #{url}:#{rd}
 |]
@@ -33,8 +34,9 @@ getCommandLog config isDaemon=
       copyFrom = concatMap (remoteCopyFrom u p rd) (writes config)
       cmd = parseCommand config
       daemon = if isDaemon then "-d" else ""
+      envar = M.foldrWithKey (\k v a -> a ++ k ++ "=" ++ v ++ " ") "" (env config)
 
-      command = [i|docker run #{daemon} -w #{cd} -v #{rd}:#{cd} #{image config} #{cmd}
+      command = [i|#{envar} docker run #{daemon} -w #{cd} -v #{rd}:#{cd} #{image config} #{cmd}
 |]
   in
     copyTo ++ command ++ copyFrom

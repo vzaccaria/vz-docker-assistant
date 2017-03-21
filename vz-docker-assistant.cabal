@@ -21,8 +21,8 @@ executable vz-docker-assistant
                      , bytestring >= 0.10.8.1
                      , containers >= 0.5.7.1
                      , split
-                     , parsec
                      , parsec-numbers
+                     , parsec
                      , interpolate
                      , docopt
                      , process
